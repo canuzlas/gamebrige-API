@@ -16,6 +16,19 @@ const postApiJwt = async (req, res) => {
     res.send({ error: true });
   }
 };
+const checkEmail = async (req, res) => {
+  try {
+    console.log(req.body);
+    const userIsFind = await userModel.findOne({ mail: req.body.email });
+    if (userIsFind != null) {
+      res.send({ email: true });
+    } else {
+      res.send({ email: false });
+    }
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
 const registerOrLogin = async (req, res) => {
   try {
     console.log(req.body.user);
@@ -133,5 +146,5 @@ module.exports = {
   getoneblog,
   editblog,
   searchperson,
-  followperson
+  followperson,checkEmail
 };
