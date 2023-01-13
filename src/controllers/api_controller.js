@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/users_model");
 const blogModel = require("../models/blog_model");
+var md5 = require('md5');
 
 const getApiJwt = async (req, res) => {
   console.log("get geldi");
@@ -29,23 +30,30 @@ const checkEmail = async (req, res) => {
     res.send({ error: true });
   }
 };
-const registerOrLogin = async (req, res) => {
+const checkUserName = async (req, res) => {
   try {
-    console.log(req.body.user);
-    const userIsFind = await userModel.findOne({ mail: req.body.user.email });
+    console.log(req.body);
+    const userIsFind = await userModel.findOne({ username: req.body.username });
+    console.log(userIsFind)
     if (userIsFind != null) {
-      console.log("if");
-      res.send({ login: "true", user: userIsFind });
+      res.send({ username: true });
     } else {
-      console.log("else");
-      const user = await new userModel({
-        name: req.body.user.name,
-        mail: req.body.user.email,
-        photo: req.body.user.photo,
-      });
-      const res = await user.save();
-      res.send({ login: "false", user: user });
+      res.send({ username: false });
     }
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+const register = async (req, res) => {
+  try {
+    console.log(req.body);
+      const user = await new userModel({
+        name: req.body.username,
+        mail: req.body.mail,
+        pass: md5(req.body.pass),
+      });
+      await user.save();
+      res.send({ register: "true", user: user });
   } catch (error) {
     res.send({ error: true });
   }
@@ -139,12 +147,12 @@ const followperson = async (req, res) => {
 module.exports = {
   getApiJwt,
   postApiJwt,
-  registerOrLogin,
+  register,
   saveBlog,
   getmyblogs,
   deleteblog,
   getoneblog,
   editblog,
   searchperson,
-  followperson,checkEmail
+  followperson,checkEmail,checkUserName
 };
