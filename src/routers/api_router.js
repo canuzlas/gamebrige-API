@@ -4,13 +4,16 @@ const apiController = require('../controllers/api_controller')
 const apiMdw = require("../mdw/api_mdw")
 
 router.get('/:appId', apiMdw.checkCustomer, apiController.getApiJwt)
-router.post('/', apiMdw.checkCustomer, apiController.postApiJwt)
+
 router.post('/checkemail', apiMdw.checkCustomer, apiController.checkEmail)
 router.post('/checkusername', apiMdw.checkCustomer, apiController.checkUserName)
 
-
-
 router.post('/register', apiMdw.checkCustomer, apiController.register)
+
+router.post('/login', apiMdw.checkCustomer, apiController.login)
+
+router.post('/getfollowedsblogs',apiMdw.checkCustomer,apiMdw.checkToken, apiController.getFollowedsBlogs)
+
 
 router.post('/saveblog',apiMdw.checkCustomer, apiController.saveBlog)
 

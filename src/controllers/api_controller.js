@@ -8,15 +8,7 @@ const getApiJwt = async (req, res) => {
   const token = await jwt.sign({}, process.env.JWT_SECRET, { expiresIn: "1h" });
   return res.send({ token: token });
 };
-const postApiJwt = async (req, res) => {
-  const data = req.body;
-  try {
-    const result = await jwt.verify(data.token, process.env.JWT_SECRET);
-    result ? res.send({ error: "false" }) : res.send({ error: "true" });
-  } catch (error) {
-    res.send({ error: true });
-  }
-};
+
 const checkEmail = async (req, res) => {
   try {
     console.log(req.body);
@@ -48,12 +40,44 @@ const register = async (req, res) => {
   try {
     console.log(req.body);
       const user = await new userModel({
-        name: req.body.username,
+        username: req.body.username,
         mail: req.body.mail,
         pass: md5(req.body.pass),
       });
       await user.save();
       res.send({ register: "true", user: user });
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+const login = async (req, res) => {
+  try {
+    const userIsFind = await userModel.findOne({$or:[{username:req.body.usernameormail},{mail:req.body.usernameormail}],pass:md5(req.body.pass)});
+    if(userIsFind != null){
+      res.send({ login: true , user:userIsFind});
+    }else{
+      res.send({ login: false});
+    }
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
+const getFollowedsBlogs = async (req, res) => {
+  const data = req.body;
+  const user = JSON.parse(data.user);
+  console.log(user.following)
+  try {
+  //   const blogs = await blogModel.find({
+  //     '_id': { $in:user.following }
+
+      
+  // }).sort({date: -1});
+
+
+  const blogs = await blogModel.find().where('blog_author').in(user.following).exec();
+    console.log(blogs)
+    res.send({ error: false, blogs });
   } catch (error) {
     res.send({ error: true });
   }
@@ -146,13 +170,13 @@ const followperson = async (req, res) => {
 };
 module.exports = {
   getApiJwt,
-  postApiJwt,
   register,
+  login,
   saveBlog,
   getmyblogs,
   deleteblog,
   getoneblog,
   editblog,
   searchperson,
-  followperson,checkEmail,checkUserName
+  followperson,checkEmail,checkUserName,getFollowedsBlogs
 };
