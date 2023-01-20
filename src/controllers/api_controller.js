@@ -62,21 +62,30 @@ const login = async (req, res) => {
     res.send({ error: true });
   }
 };
+const getoneblog = async (req, res) => {
+ 
+  const data = req.body;
+  console.log(data)
+  try {
+    const blog = await blogModel.findById(data.blog_id);
+    console.log(blog)
+    if(blog==null){
+      res.send({ blog: false });
+    }else{
+      res.send({ blog });
+    }
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
 
 const getFollowedsBlogs = async (req, res) => {
   const data = req.body;
   const user = JSON.parse(data.user);
-  console.log(user.following)
+  //console.log(user.following)
   try {
-  //   const blogs = await blogModel.find({
-  //     '_id': { $in:user.following }
-
-      
-  // }).sort({date: -1});
-
-
   const blogs = await blogModel.find().where('blog_author').in(user.following).exec();
-    console.log(blogs)
+    //console.log(blogs)
     res.send({ error: false, blogs });
   } catch (error) {
     res.send({ error: true });
@@ -117,15 +126,6 @@ const deleteblog = async (req, res) => {
   }
 };
 
-const getoneblog = async (req, res) => {
-  const data = req.body;
-  try {
-    const blog = await blogModel.findById(data._id);
-    res.send({ error: false, blog });
-  } catch (error) {
-    res.send({ error: true });
-  }
-};
 const editblog = async (req, res) => {
   const data = req.body;
   try {

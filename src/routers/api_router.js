@@ -13,6 +13,7 @@ router.post('/register', apiMdw.checkCustomer, apiController.register)
 router.post('/login', apiMdw.checkCustomer, apiController.login)
 
 router.post('/getfollowedsblogs',apiMdw.checkCustomer,apiMdw.checkToken, apiController.getFollowedsBlogs)
+router.post('/getblog',apiMdw.checkCustomer, apiController.getoneblog)
 
 
 router.post('/saveblog',apiMdw.checkCustomer, apiController.saveBlog)
