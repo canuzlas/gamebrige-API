@@ -7,7 +7,8 @@ const usersSchema = new Schema({
     username: { type: String, min: 6, max: 60, trim: true },
     pass: { type: String, min: 6, max: 60, trim: true },
     photo: { type: String, default: false },
-    following:{type: Array,default:[]}
+    following:{type: Array,default:[]},
+    followers:{type: Array,default:[]}
 }, { timestamps: true })
 
 const usersModel = mongoose.model("user", usersSchema)

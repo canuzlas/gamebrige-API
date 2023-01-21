@@ -108,8 +108,10 @@ const saveBlog = async (req, res) => {
 
 const getmyblogs = async (req, res) => {
   const data = req.body;
+  console.log(data)
   try {
     const blogs = await blogModel.find({ blog_author: data._id });
+    console.log(blogs)
     res.send({ error: false, blogs });
   } catch (error) {
     res.send({ error: true });
@@ -141,25 +143,39 @@ const editblog = async (req, res) => {
 };
 const searchperson = async (req, res) => {
   const data = req.body;
+  //console.log(data)
   try {
     const result = await userModel.find({
+      _id: { $ne: data.userid },
       $or: [
-        { name: { $regex: data.name, $options: "i" } },
-        { mail: { $regex: data.name, $options: "i" } },
+        { username: { $regex: data.word, $options: "i" } },
+        { mail: { $regex: data.word, $options: "i" } },
       ],
     });
 
-    res.send({ error: false, person: result });
+    res.send({ error: false, users: result });
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+const searchbestperson = async (req, res) => {
+  const data = req.body;
+  //console.log(data);
+  try {
+    const result = await userModel.find({_id: { $ne: data.userid }}).sort({"following":-1}).limit(10)
+    //console.log(result);
+    res.send({ error: false, users: result });
   } catch (error) {
     res.send({ error: true });
   }
 };
 const followperson = async (req, res) => {
   const data = req.body;
+  console.log(data)
   try {
-    const result = await userModel.findOne({_id:data._id,following:data.person_id});
+    const result = await userModel.findOne({_id:data.user_id,following:data.willfollowpersonid});
     if(result == null){
-      const result = await userModel.findByIdAndUpdate(data._id,{ $push: { following: data.person_id } });
+      const result = await userModel.findByIdAndUpdate(data.user_id,{ $push: { following: data.willfollowpersonid } });
       res.send({ error: false });
     }else{
       res.send({ error: "followed" });
@@ -178,5 +194,5 @@ module.exports = {
   getoneblog,
   editblog,
   searchperson,
-  followperson,checkEmail,checkUserName,getFollowedsBlogs
+  followperson,checkEmail,checkUserName,getFollowedsBlogs,searchbestperson,
 };

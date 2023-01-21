@@ -15,6 +15,10 @@ router.post('/login', apiMdw.checkCustomer, apiController.login)
 router.post('/getfollowedsblogs',apiMdw.checkCustomer,apiMdw.checkToken, apiController.getFollowedsBlogs)
 router.post('/getblog',apiMdw.checkCustomer, apiController.getoneblog)
 
+router.post('/searchperson',apiMdw.checkCustomer, apiController.searchperson)
+router.post('/getbestusers',apiMdw.checkCustomer, apiController.searchbestperson)
+
+
 
 router.post('/saveblog',apiMdw.checkCustomer, apiController.saveBlog)
 
@@ -24,7 +28,6 @@ router.post('/getoneblog',apiMdw.checkCustomer, apiController.getoneblog)
 router.post('/deleteblog',apiMdw.checkCustomer, apiController.deleteblog)
 router.post('/editblog',apiMdw.checkCustomer, apiController.editblog)
 
-router.post('/searchperson',apiMdw.checkCustomer, apiController.searchperson)
 
 router.post('/followperson',apiMdw.checkCustomer, apiController.followperson)
 
