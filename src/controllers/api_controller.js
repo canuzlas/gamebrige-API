@@ -68,11 +68,12 @@ const getoneblog = async (req, res) => {
   console.log(data)
   try {
     const blog = await blogModel.findById(data.blog_id);
-    console.log(blog)
+    const author = await userModel.findById(blog.blog_author);
+
     if(blog==null){
       res.send({ blog: false });
     }else{
-      res.send({ blog });
+      res.send({ blog , author});
     }
   } catch (error) {
     res.send({ error: true });
@@ -91,11 +92,25 @@ const getFollowedsBlogs = async (req, res) => {
     res.send({ error: true });
   }
 };
+
+const getallblogs = async (req, res) => {
+
+  try {
+    const blogs = await blogModel.find().sort({ _id : -1 }).limit(20);
+    res.send({ blogs });
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
 const saveBlog = async (req, res) => {
   const data = req.body;
   try {
+    const author = await userModel.findById(data.user._id);
+
     const blog = await new blogModel({
-      blog_author: data.author,
+      blog_author: data.user._id,
+      blog_author_username:author.username,
       blog_title: data.title,
       blog_text: data.text,
     });
@@ -110,7 +125,7 @@ const getmyblogs = async (req, res) => {
   const data = req.body;
   console.log(data)
   try {
-    const blogs = await blogModel.find({ blog_author: data._id });
+    const blogs = await blogModel.find({ blog_author: data._id }).sort({ _id : -1 });
     console.log(blogs)
     res.send({ error: false, blogs });
   } catch (error) {
@@ -209,5 +224,11 @@ module.exports = {
   getoneblog,
   editblog,
   searchperson,
-  followperson,checkEmail,checkUserName,getFollowedsBlogs,searchbestperson,getpersondata
+  followperson,
+  checkEmail,
+  checkUserName,
+  getFollowedsBlogs,
+  searchbestperson,
+  getpersondata,
+  getallblogs
 };
