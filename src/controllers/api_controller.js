@@ -169,6 +169,18 @@ const searchbestperson = async (req, res) => {
     res.send({ error: true });
   }
 };
+const getpersondata = async (req, res) => {
+  const data = req.body;
+  console.log(data);
+  try {
+    const person = await userModel.findById(data._id)
+    //console.log(result);
+    res.send({ error: false, person });
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
 const followperson = async (req, res) => {
   const data = req.body;
   console.log(data)
@@ -176,7 +188,10 @@ const followperson = async (req, res) => {
     const result = await userModel.findOne({_id:data.user_id,following:data.willfollowpersonid});
     if(result == null){
       const result = await userModel.findByIdAndUpdate(data.user_id,{ $push: { following: data.willfollowpersonid } });
-      res.send({ error: false });
+      await userModel.findByIdAndUpdate(data.willfollowpersonid,{ $push: { followers: data.user_id } });
+
+      const user = await userModel.findById(data.user_id);
+      res.send({ error: false, user });
     }else{
       res.send({ error: "followed" });
     }
@@ -194,5 +209,5 @@ module.exports = {
   getoneblog,
   editblog,
   searchperson,
-  followperson,checkEmail,checkUserName,getFollowedsBlogs,searchbestperson,
+  followperson,checkEmail,checkUserName,getFollowedsBlogs,searchbestperson,getpersondata
 };
