@@ -113,6 +113,7 @@ const saveBlog = async (req, res) => {
       blog_author_username:author.username,
       blog_title: data.title,
       blog_text: data.text,
+      blog_author_photo:author.photo
     });
     await blog.save();
     res.send({ error: false });
@@ -136,7 +137,7 @@ const getmyblogs = async (req, res) => {
 const deleteblog = async (req, res) => {
   const data = req.body;
   try {
-    const result = await blogModel.findByIdAndDelete(data._id);
+    const result = await blogModel.findByIdAndDelete(data.blog_id);
     res.send({ error: false });
   } catch (error) {
     res.send({ error: true });
@@ -145,12 +146,13 @@ const deleteblog = async (req, res) => {
 
 const editblog = async (req, res) => {
   const data = req.body;
+
   try {
-    const result = await blogModel.findByIdAndUpdate(data._id, {
+    const result = await blogModel.findByIdAndUpdate(data.blog._id, {
       blog_title: data.title,
       blog_text: data.text,
     });
-    console.log(result);
+    console.log(data);
     res.send({ error: false });
   } catch (error) {
     res.send({ error: true });
