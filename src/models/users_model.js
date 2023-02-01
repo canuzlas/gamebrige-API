@@ -7,6 +7,7 @@ const usersSchema = new Schema({
     username: { type: String, min: 6, max: 60, trim: true },
     pass: { type: String, min: 6, max: 60, trim: true },
     photo: { type: String, default: false },
+    fbuid:{ type: String },
     following:{type: Array,default:[]},
     followers:{type: Array,default:[]}
 }, { timestamps: true })

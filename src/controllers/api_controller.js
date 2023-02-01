@@ -43,6 +43,7 @@ const register = async (req, res) => {
         username: req.body.username,
         mail: req.body.mail,
         pass: md5(req.body.pass),
+        fbuid:req.body.fbuid
       });
       await user.save();
       res.send({ register: "true", user: user });
@@ -158,6 +159,28 @@ const editblog = async (req, res) => {
     res.send({ error: true });
   }
 };
+const getalluserfromarray = async (req, res) => {
+  const data = req.body;
+  //console.log(data)
+  try {
+    const users = await userModel.find().where('_id').in(data.following_array).exec();
+   
+    res.send({ error: false, users });
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+const getmessagingpersondata = async (req, res) => {
+  const data = req.body;
+  //console.log(data)
+  try {
+    const user= await userModel.findOne({fbuid:data.person_fbuid})
+    res.send({ error: false, user });
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
 const searchperson = async (req, res) => {
   const data = req.body;
   //console.log(data)
@@ -232,5 +255,7 @@ module.exports = {
   getFollowedsBlogs,
   searchbestperson,
   getpersondata,
-  getallblogs
+  getallblogs,
+  getalluserfromarray,
+  getmessagingpersondata
 };

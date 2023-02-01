@@ -16,6 +16,9 @@ router.post('/getfollowedsblogs',apiMdw.checkCustomer,apiMdw.checkToken, apiCont
 router.post('/getblog',apiMdw.checkCustomer, apiController.getoneblog)
 router.post('/getallblogs',apiMdw.checkCustomer, apiController.getallblogs)
 
+router.post('/getalluserfromarray',apiMdw.checkCustomer, apiController.getalluserfromarray)
+router.post('/getmessagingpersondata',apiMdw.checkCustomer, apiController.getmessagingpersondata)
+
 
 router.post('/searchperson',apiMdw.checkCustomer, apiController.searchperson)
 
