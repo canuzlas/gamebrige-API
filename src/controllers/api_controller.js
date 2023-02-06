@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/users_model");
 const blogModel = require("../models/blog_model");
+const reportModel = require("../models/report_model");
+
 var md5 = require('md5');
 
 const getApiJwt = async (req, res) => {
@@ -239,6 +241,29 @@ const followperson = async (req, res) => {
     res.send({ error: true });
   }
 };
+const reportSystem = async (req, res) => {
+  const data = req.body;
+  const towhat = req.params.towhat;
+  try {
+    switch (towhat) {
+      case "blog":
+        const blog = await blogModel.findById(data.blog_id)
+        const reportblog = await new reportModel({report_towhat:towhat,reported_item:blog,reporting_person:data.reporting_person})
+        await reportblog.save();
+        res.send({error:false})
+        break;
+      case "person": 
+        const person = await userModel.findById(data.reported_id)
+        const reportperson = await new reportModel({report_towhat:towhat,reported_item:person,reporting_person:data.reporting_person})
+        await reportperson.save();
+        res.send({error:false})
+        break;
+    }
+  } catch (error) {
+    res.send({error:true})
+  }
+  
+};
 module.exports = {
   getApiJwt,
   register,
@@ -257,5 +282,6 @@ module.exports = {
   getpersondata,
   getallblogs,
   getalluserfromarray,
-  getmessagingpersondata
+  getmessagingpersondata,
+  reportSystem
 };

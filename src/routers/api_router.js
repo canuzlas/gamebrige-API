@@ -37,4 +37,7 @@ router.post('/editblog',apiMdw.checkCustomer, apiController.editblog)
 
 router.post('/followperson',apiMdw.checkCustomer, apiController.followperson)
 
+router.post('/report/:towhat',apiMdw.checkCustomer, apiController.reportSystem)
+
+
 module.exports = router
