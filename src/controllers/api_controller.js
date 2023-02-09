@@ -88,7 +88,7 @@ const getFollowedsBlogs = async (req, res) => {
   const user = JSON.parse(data.user);
   //console.log(user.following)
   try {
-  const blogs = await blogModel.find().where('blog_author').in(user.following).exec();
+  const blogs = await blogModel.find().where('blog_author').in(user.following).sort({ createdAt : -1 }).exec();
     //console.log(blogs)
     res.send({ error: false, blogs });
   } catch (error) {
@@ -229,13 +229,16 @@ const followperson = async (req, res) => {
   try {
     const result = await userModel.findOne({_id:data.user_id,following:data.willfollowpersonid});
     if(result == null){
-      const result = await userModel.findByIdAndUpdate(data.user_id,{ $push: { following: data.willfollowpersonid } });
+      await userModel.findByIdAndUpdate(data.user_id,{ $push: { following: data.willfollowpersonid } });
       await userModel.findByIdAndUpdate(data.willfollowpersonid,{ $push: { followers: data.user_id } });
 
       const user = await userModel.findById(data.user_id);
       res.send({ error: false, user });
     }else{
-      res.send({ error: "followed" });
+      await userModel.findByIdAndUpdate(data.user_id,{ $pull: { following: data.willfollowpersonid } });
+      await userModel.findByIdAndUpdate(data.willfollowpersonid,{ $pull: { followers: data.user_id } });
+      const user = await userModel.findById(data.user_id);
+      res.send({ error: "followed",user });
     }
   } catch (error) {
     res.send({ error: true });
