@@ -65,6 +65,29 @@ const login = async (req, res) => {
     res.send({ error: true });
   }
 };
+
+const loginwithgoogle = async (req, res) => {
+  try {
+    const userIsFind = await userModel.findOne({mail:req.body.user.email});
+    console.log(userIsFind);
+    if(userIsFind == null){
+      const str = req.body.user.username.replace(/ +/g, "");
+      const user = await new userModel({
+        mail:req.body.user.email,
+        username:str,
+        fbuid:req.body.user.fbuid,
+      }) 
+      await user.save()
+      res.send({user , login: false});
+    }else{
+      res.send({ login: true, user:userIsFind});
+    }
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
+
 const getoneblog = async (req, res) => {
  
   const data = req.body;
@@ -87,9 +110,10 @@ const getFollowedsBlogs = async (req, res) => {
   const data = req.body;
   const user = JSON.parse(data.user);
   //console.log(user.following)
+  console.log(data);
   try {
   const blogs = await blogModel.find().where('blog_author').in(user.following).sort({ createdAt : -1 }).exec();
-    //console.log(blogs)
+    console.log(blogs)
     res.send({ error: false, blogs });
   } catch (error) {
     res.send({ error: true });
@@ -185,7 +209,6 @@ const getmessagingpersondata = async (req, res) => {
 
 const searchperson = async (req, res) => {
   const data = req.body;
-  //console.log(data)
   try {
     const result = await userModel.find({
       _id: { $ne: data.userid },
@@ -194,17 +217,18 @@ const searchperson = async (req, res) => {
         { mail: { $regex: data.word, $options: "i" } },
       ],
     });
-
-    res.send({ error: false, users: result });
+    console.log(result);
+    res.send({ error: false, searchedUsers: result });
   } catch (error) {
     res.send({ error: true });
   }
 };
 const searchbestperson = async (req, res) => {
   const data = req.body;
+  const user = JSON.parse(data.user);
   //console.log(data);
   try {
-    const result = await userModel.find({_id: { $ne: data.userid }}).sort({"following":-1}).limit(10)
+    const result = await userModel.find({_id: { $ne: user._id }}).sort({"following":-1}).limit(10)
     //console.log(result);
     res.send({ error: false, users: result });
   } catch (error) {
@@ -225,20 +249,21 @@ const getpersondata = async (req, res) => {
 
 const followperson = async (req, res) => {
   const data = req.body;
+  const user = JSON.parse(data.user);
   console.log(data)
   try {
-    const result = await userModel.findOne({_id:data.user_id,following:data.willfollowpersonid});
+    const result = await userModel.findOne({_id:user._id,following:data.willfollowpersonid});
     if(result == null){
-      await userModel.findByIdAndUpdate(data.user_id,{ $push: { following: data.willfollowpersonid } });
-      await userModel.findByIdAndUpdate(data.willfollowpersonid,{ $push: { followers: data.user_id } });
+      await userModel.findByIdAndUpdate(user._id,{ $push: { following: data.willfollowpersonid } });
+      await userModel.findByIdAndUpdate(data.willfollowpersonid,{ $push: { followers: user._id } });
 
-      const user = await userModel.findById(data.user_id);
-      res.send({ error: false, user });
+      const refuser = await userModel.findById(user._id);
+      res.send({ error: false, user:refuser });
     }else{
-      await userModel.findByIdAndUpdate(data.user_id,{ $pull: { following: data.willfollowpersonid } });
-      await userModel.findByIdAndUpdate(data.willfollowpersonid,{ $pull: { followers: data.user_id } });
-      const user = await userModel.findById(data.user_id);
-      res.send({ error: "followed",user });
+      await userModel.findByIdAndUpdate(user._id,{ $pull: { following: data.willfollowpersonid } });
+      await userModel.findByIdAndUpdate(data.willfollowpersonid,{ $pull: { followers:user._id } });
+      const refuser = await userModel.findById(user._id);
+      res.send({ error: "followed",user:refuser });
     }
   } catch (error) {
     res.send({ error: true });
@@ -286,5 +311,6 @@ module.exports = {
   getallblogs,
   getalluserfromarray,
   getmessagingpersondata,
-  reportSystem
+  reportSystem,
+  loginwithgoogle
 };
