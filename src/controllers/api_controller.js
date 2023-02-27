@@ -292,6 +292,22 @@ const reportSystem = async (req, res) => {
   }
   
 };
+const updateprofile = async (req, res) => {
+  const data = req.body;
+  //console.log(data.user.name);
+  try {
+    const result = await userModel.findByIdAndUpdate(data.user._id, {
+      name:data.name,
+      username: data.username,
+    });
+    const user = await userModel.findById(result._id)
+    res.send({ error: false , user});
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
+
 module.exports = {
   getApiJwt,
   register,
@@ -312,5 +328,6 @@ module.exports = {
   getalluserfromarray,
   getmessagingpersondata,
   reportSystem,
-  loginwithgoogle
+  loginwithgoogle,
+  updateprofile
 };

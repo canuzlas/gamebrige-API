@@ -41,4 +41,8 @@ router.post('/followperson',apiMdw.checkCustomer,apiMdw.checkToken, apiControlle
 router.post('/report/:towhat',apiMdw.checkCustomer,apiMdw.checkToken, apiController.reportSystem)
 
 
+router.post('/updateprofile',apiMdw.checkCustomer,apiMdw.checkToken, apiController.updateprofile)
+
+
+
 module.exports = router
