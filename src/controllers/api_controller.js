@@ -71,16 +71,19 @@ const loginwithgoogle = async (req, res) => {
     const userIsFind = await userModel.findOne({mail:req.body.user.email});
     console.log(userIsFind);
     if(userIsFind == null){
-      const str = req.body.user.username.replace(/ +/g, "");
+      const str = req.body.user.username.replace(/ +/g, "")+"_"+Math.floor(Math.random()*898)+53;
       const user = await new userModel({
         mail:req.body.user.email,
         username:str,
         fbuid:req.body.user.fbuid,
+        loginMethod:"google"
       }) 
       await user.save()
       res.send({user , login: false});
     }else{
-      res.send({ login: true, user:userIsFind});
+      await userModel.findByIdAndUpdate(userIsFind._id,{loginMethod:"google"});
+      const user = await userModel.findById(userIsFind._id);
+      res.send({ login: true, user});
     }
   } catch (error) {
     res.send({ error: true });
@@ -296,11 +299,33 @@ const updateprofile = async (req, res) => {
   const data = req.body;
   //console.log(data.user.name);
   try {
+    const possible = await userModel.findOne({username:data.username});
+    console.log(possible);
+    if(possible == null){
+      const result = await userModel.findByIdAndUpdate(data.user._id, {
+        name:data.name,
+        username: data.username,
+      });
+      await blogModel.updateMany({blog_author:result._id},{blog_author_username:data.username})  ;
+      const user = await userModel.findById(result._id)
+      res.send({ error: false , user});
+    }else{
+      res.send({ error: true });
+    }
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
+const changepp = async (req, res) => {
+  const data = req.body;
+  
+  try {
     const result = await userModel.findByIdAndUpdate(data.user._id, {
-      name:data.name,
-      username: data.username,
+      photo:data.ppname
     });
-    const user = await userModel.findById(result._id)
+    await blogModel.updateMany({blog_author:result._id},{blog_author_photo:data.ppname})  ;
+    const user = await userModel.findById(result._id);
     res.send({ error: false , user});
   } catch (error) {
     res.send({ error: true });
@@ -329,5 +354,6 @@ module.exports = {
   getmessagingpersondata,
   reportSystem,
   loginwithgoogle,
-  updateprofile
+  updateprofile,
+  changepp
 };

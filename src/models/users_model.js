@@ -6,6 +6,7 @@ const usersSchema = new Schema({
     mail: { type: String, min: 8, max: 60, trim: true },
     username: { type: String, min: 6, max: 60, trim: true },
     pass: { type: String, min: 6, max: 60, trim: true },
+    loginMethod: { type: String, default:"app"},
     photo: { type: String, default: false },
     fbuid:{ type: String },
     following:{type: Array,default:[]},

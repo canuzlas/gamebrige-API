@@ -42,6 +42,10 @@ router.post('/report/:towhat',apiMdw.checkCustomer,apiMdw.checkToken, apiControl
 
 
 router.post('/updateprofile',apiMdw.checkCustomer,apiMdw.checkToken, apiController.updateprofile)
+router.post('/changepp',apiMdw.checkCustomer,apiMdw.checkToken, apiController.changepp)
+
+
+
 
 
 

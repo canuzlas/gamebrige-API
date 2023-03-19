@@ -13,11 +13,9 @@ const checkCustomer = (req,res,next)=>{
 const checkToken = async (req, res,next) => {
     const data = req.body;
     try {
-      const result = await jwt.verify(data.token, process.env.JWT_SECRET);
-      console.log(result)
+      const result = await jwt.verify(data.token, data.JWT_SECRET);
       result ? next() : res.send({ tokenError: "true" }) 
     } catch (error) {
-      console.log(error);
       res.send({ tokenError: "true" });
     }
   };
