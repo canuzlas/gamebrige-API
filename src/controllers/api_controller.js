@@ -332,6 +332,22 @@ const changepp = async (req, res) => {
   }
 };
 
+const changepass = async (req, res) => {
+  const data = req.body;
+  
+  try {
+    !data.user_id ?  await userModel.findOneAndUpdate({mail:data.mail},{pass:md5(data.pass)}):
+    await userModel.findByIdAndUpdate(data.user_id, {
+      pass:md5(data.pass)
+    });
+    res.send({ error: false});
+  } catch (error) {
+    res.send({ error: true });
+  }
+};
+
+
+
 
 module.exports = {
   getApiJwt,
@@ -355,5 +371,6 @@ module.exports = {
   reportSystem,
   loginwithgoogle,
   updateprofile,
-  changepp
+  changepp,
+  changepass
 };
